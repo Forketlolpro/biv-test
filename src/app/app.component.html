@@ -1,6 +1,60 @@
-<mat-form-field appearance="fill">
-  <mat-label>Chose you hero</mat-label>
-  <mat-select appInfiniteScroll (onScrollDown)="loadData()" (selectionChange)="onSelect($event)">
-    <mat-option *ngFor="let item of data" [value]="item">{{ item.name }}</mat-option>
-  </mat-select>
-</mat-form-field>
+<div class="layout">
+  <mat-form-field appearance="fill">
+    <mat-label>Chose you hero</mat-label>
+    <mat-select appInfiniteScroll (onScrollDown)="loadNextData()" (selectionChange)="onSelect($event)">
+      <mat-option *ngFor="let item of data" [value]="item">{{ item.name }}</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <mat-card *ngIf="fullData">
+    <mat-card-header>
+      <mat-card-title>{{ fullData.character.name }}</mat-card-title>
+    </mat-card-header>
+
+    <mat-card-subtitle>Info:</mat-card-subtitle>
+    <mat-card-content>
+      <div *ngFor="let item of fullData.character | keyvalue">
+        <span>{{ formatName(item.key) }}:</span> {{item.value}}
+      </div>
+    </mat-card-content>
+
+    <mat-card-subtitle>Homeworld:</mat-card-subtitle>
+    <mat-card-content>
+      <div *ngFor="let item of fullData?.homeworld | keyvalue">
+        <span>{{ formatName(item.key) }}:</span> {{item.value}}
+      </div>
+    </mat-card-content>
+
+    <mat-card-subtitle>Films:</mat-card-subtitle>
+    <mat-card-content>
+      <ol>
+        <li *ngFor="let item of fullData?.films">
+          <div><span>Title:</span> {{ item.title }}</div>
+          <div><span>Release date:</span> {{ item.release_date }}</div>
+        </li>
+      </ol>
+    </mat-card-content>
+
+    <ng-container *ngIf="fullData.transport">
+      <mat-card-subtitle>Vehicles:</mat-card-subtitle>
+      <mat-card-content>
+        <ol>
+          <li *ngFor="let item of fullData.transport?.vehicles">
+            <div><span>Name:</span> {{ item.name }}</div>
+            <div><span>Model:</span> {{ item.model }}</div>
+          </li>
+        </ol>
+      </mat-card-content>
+
+      <mat-card-subtitle>Starships:</mat-card-subtitle>
+      <mat-card-content>
+        <ol>
+          <li *ngFor="let item of fullData.transport?.starships">
+            <div><span>Name:</span> {{ item.name }}</div>
+            <div><span>Model:</span> {{ item.model }}</div>
+          </li>
+        </ol>
+      </mat-card-content>
+    </ng-container>
+  </mat-card>
+</div>

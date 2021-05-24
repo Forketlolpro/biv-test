@@ -1,9 +1,9 @@
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
-import { forkJoin, Observable } from "rxjs";
-import {map, mergeMap} from "rxjs/operators";
+import { forkJoin, Observable, concat, combineLatest } from "rxjs";
+import { map, reduce } from "rxjs/operators";
 
-import { People, Response } from "./interfaces";
+import { Film, Homeworld, People, Response, Transport } from "./interfaces";
 
 const BASE_URL = 'https://swapi.dev/api/';
 
@@ -16,23 +16,50 @@ export class ApiService {
   }
 
   loadFullData(people: People) {
-    return this.getFilms(people.films)
+    let { films, homeworld, created, edited, species, starships, vehicles, url, ...initial } = people;
+    const a = { character : initial }
 
-    // return forkJoin({
-    //   homeworld: this.http.get(people.homeworld).pipe(map((data: any) => ({ name: data.name, population: data.population }))),
-    //   films: this.getFilms(people.films),
-    //   // starships: forkJoin(this.getRequests(people.starships)),
-    //   // vehicles: forkJoin(this.getRequests(people.vehicles))
-    // })
+    const films$ = this.getFilms(films);
+    const starships$ = this.getStarships(starships);
+    const vehicles$ = this.getVehicles(vehicles);
+    const transport$ = combineLatest([vehicles$, starships$])
+      .pipe(
+        map(data => ({ transport: { ...data[0], ...data[1] }}))
+      );
+
+    const homeworld$ = this.getHomeworld([homeworld])
+
+    return concat(films$, transport$, homeworld$)
+      .pipe(
+        reduce((acc, one) => ({ ...acc, ...one }), a)
+      );
   }
 
-  private getFilms(urls: string[]) {
+  private getFilms(urls: string[]): Observable<{ films: Film[] }> {
     return forkJoin(this.getRequests(urls))
       .pipe(
-        mergeMap(data => {
-          console.log(data);
-          return data;
-        })
+        map(data => ( { films: data.map(({ title, release_date }) => ({ title, release_date})) }))
+      )
+  }
+
+  private getStarships(urls: string[]): Observable<{ starships: Transport[] }> {
+    return forkJoin(this.getRequests(urls))
+      .pipe(
+        map(data => ({ starships: data.map(({ name, model }) => ({ name, model})) }))
+      )
+  }
+
+  private getVehicles(urls: string[]): Observable<{ vehicles: Transport[] }> {
+    return forkJoin(this.getRequests(urls))
+      .pipe(
+        map(data => ({ vehicles: data.map(({ name, model }) => ({ name, model})) }))
+      )
+  }
+
+  private getHomeworld(urls: string[]): Observable<{ homeworld: Homeworld }> {
+    return forkJoin(this.getRequests(urls))
+      .pipe(
+        map(data => ({ homeworld: { name: data[0].name, population: data[0].population }}))
       )
   }
 

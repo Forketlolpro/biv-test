@@ -6,6 +6,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClientModule } from "@angular/common/http";
 import { ApiService } from "./api.service";
 import { MatSelectModule } from "@angular/material/select";
+import { MatCardModule } from '@angular/material/card';
+
 import {InfiniteScrollDirective} from "./infinite-scroll.directive";
 
 @NgModule({
@@ -17,7 +19,8 @@ import {InfiniteScrollDirective} from "./infinite-scroll.directive";
     BrowserModule,
     BrowserAnimationsModule,
     HttpClientModule,
-    MatSelectModule
+    MatSelectModule,
+    MatCardModule
   ],
   providers: [ApiService],
   bootstrap: [AppComponent]

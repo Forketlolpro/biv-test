@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { MatSelectChange } from "@angular/material/select";
+import { take } from "rxjs/operators";
 
 import { ApiService } from "./api.service";
-import { People } from "./interfaces";
+import { FullPeopleData, People } from "./interfaces";
 
 @Component({
   selector: 'app-root',
@@ -10,8 +11,9 @@ import { People } from "./interfaces";
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
+  private next?: string;
   data?: People[];
-  next?: string;
+  fullData?: FullPeopleData;
 
   constructor(private api: ApiService) {}
 
@@ -22,7 +24,7 @@ export class AppComponent implements OnInit {
     });
   }
 
-  loadData() {
+  loadNextData() {
     if (this?.next) {
       this.api.getPeople(this.next).subscribe(data => {
         this.data = this.data?.concat(data.results);
@@ -32,6 +34,12 @@ export class AppComponent implements OnInit {
   }
 
   onSelect(data: MatSelectChange) {
-    this.api.loadFullData(data.value).subscribe(data => data);
+    this.api.loadFullData(data.value)
+      .pipe(take(1))
+      .subscribe(data => this.fullData = data as FullPeopleData);
+  }
+
+  formatName(key: string) {
+    return key;
   }
 }
