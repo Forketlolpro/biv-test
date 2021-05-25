@@ -16,8 +16,8 @@ export class ApiService {
   }
 
   loadFullData(people: People) {
-    let { films, homeworld, created, edited, species, starships, vehicles, url, ...initial } = people;
-    const a = { character : initial }
+    let { films, homeworld, created, edited, species, starships, vehicles, url, ...rest } = people;
+    const initial = { character : rest }
 
     const films$ = this.getFilms(films);
     const starships$ = this.getStarships(starships);
@@ -31,7 +31,7 @@ export class ApiService {
 
     return concat(films$, transport$, homeworld$)
       .pipe(
-        reduce((acc, one) => ({ ...acc, ...one }), a)
+        reduce((acc, one) => ({ ...acc, ...one }), initial)
       );
   }
 

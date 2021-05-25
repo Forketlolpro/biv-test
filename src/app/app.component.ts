@@ -40,6 +40,6 @@ export class AppComponent implements OnInit {
   }
 
   formatName(key: string) {
-    return key;
+    return key.replace('_', ' ');
   }
 }

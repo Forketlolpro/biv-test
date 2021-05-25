@@ -14,14 +14,14 @@
     <mat-card-subtitle>Info:</mat-card-subtitle>
     <mat-card-content>
       <div *ngFor="let item of fullData.character | keyvalue">
-        <span>{{ formatName(item.key) }}:</span> {{item.value}}
+        <span>{{ formatName(item.key) | titlecase }}:</span> {{item.value}}
       </div>
     </mat-card-content>
 
     <mat-card-subtitle>Homeworld:</mat-card-subtitle>
     <mat-card-content>
       <div *ngFor="let item of fullData?.homeworld | keyvalue">
-        <span>{{ formatName(item.key) }}:</span> {{item.value}}
+        <span>{{ formatName(item.key) | titlecase }}:</span> {{item.value}}
       </div>
     </mat-card-content>
 
